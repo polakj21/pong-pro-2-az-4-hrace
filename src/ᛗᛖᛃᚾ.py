@@ -7,14 +7,18 @@ pygame.display.set_caption("ᛈᛟᚾᚷ᛬ᛈᚱᛟ᛬ᚲᛉᛏᛁᚱᛉᛁ᛬�
 clock = pygame.time.Clock()
 player_distance = 70
 
+ball_timeout = 0
+timeout = 7
+change_vector = pygame.math.Vector2(0.3,-0.3)
+
 #vyvolání spriteů
 walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
 
-players = pygame.sprite.Group(ver_player(player_distance,25,80,pygame.K_w,pygame.K_s),ver_player(WIDTH-player_distance,25,80,pygame.K_UP,pygame.K_DOWN),
-                              hor_player(player_distance,80,25,pygame.K_KP4,pygame.K_KP6),hor_player(HEIGHT-player_distance,80,25,pygame.K_g,pygame.K_j))
+players = pygame.sprite.Group(ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),
+                              hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3))
 
-ball_dir = pygame.math.Vector2(1,1)
-ball = ball((800,400),20,ball_dir.normalize())
+ball_dir = pygame.math.Vector2(1,-1)
+ball = ball((250,200),20,ball_dir.normalize())
 
 #koize
 def player_x_walls():
@@ -29,15 +33,38 @@ def player_x_walls():
                 player.rect.left = wall.rect.right
             elif wall.rect.collidepoint(player.rect.midright):
                 player.rect.right = wall.rect.left
+                
 def ball_x_walls():
+    global ball_timeout
     for wall in walls:
         if wall.rect.collidepoint(ball.rect_1.midtop) or wall.rect.collidepoint(ball.rect_1.midbottom):
             ball.dir.y = -ball.dir.y
-        if wall.rect.collidepoint(ball.rect_1.midright) or wall.rect.collidepoint(ball.rect_1.midleft):
+            ball_timeout = timeout
+        elif wall.rect.collidepoint(ball.rect_1.midright) or wall.rect.collidepoint(ball.rect_1.midleft):
             ball.dir.x = -ball.dir.x
+            ball_timeout = timeout
         
-        if wall.rect.collidepoint(ball.rect_2.topleft) or wall.rect.collidepoint(ball.rect_2.topright) or wall.rect.collidepoint(ball.rect_2.bottomleft) or wall.rect.collidepoint(ball.rect_2.bottomright):
+        elif wall.rect.collidepoint(ball.rect_2.topleft) or wall.rect.collidepoint(ball.rect_2.topright) or wall.rect.collidepoint(ball.rect_2.bottomleft) or wall.rect.collidepoint(ball.rect_2.bottomright):
             ball.dir = -ball.dir
+
+            ball_timeout = timeout
+def ball_x_player():
+    global ball_timeout
+    for player in players:
+        if player.rect.collidepoint(ball.rect_1.midtop) or player.rect.collidepoint(ball.rect_1.midbottom):
+            ball.dir.y = -ball.dir.y
+            ball_timeout = timeout
+            ball.id = player.id
+            
+        elif player.rect.collidepoint(ball.rect_1.midright) or player.rect.collidepoint(ball.rect_1.midleft):
+            ball.dir.x = -ball.dir.x
+            ball_timeout = timeout
+            ball.id = player.id
+        
+        elif player.rect.collidepoint(ball.rect_2.topleft) or player.rect.collidepoint(ball.rect_2.topright) or player.rect.collidepoint(ball.rect_2.bottomleft) or player.rect.collidepoint(ball.rect_2.bottomright):
+            ball.dir = -ball.dir
+            ball_timeout = timeout
+            ball.id = player.id
             
 #main loop
 while True:
@@ -55,8 +82,11 @@ while True:
     #update
     players.update()
     player_x_walls()
-    ball_x_walls()
+    if ball_timeout <= 0:
+        ball_x_walls()
+        ball_x_player()
     ball.move()
+    ball_timeout -=1
     
     #vykreslení
     screen.fill(darker)
