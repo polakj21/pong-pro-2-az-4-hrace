@@ -11,6 +11,7 @@ dark = (52,104,86)
 darker = (8,24,32)
 
 player_speed = 5
+ball_speed = 6
 
 #nehybné zdi
 class wall(pygame.sprite.Sprite):
@@ -28,6 +29,9 @@ class ball():
         self.rect_1 = pygame.Rect(center[0]-r,center[1]-r,2*r,2*r)
         self.rect_2 = pygame.Rect(center[0]-(r**2/2)**0.5,center[1]-(r**2/2)**0.5,2*((r**2/2)**0.5),2*((r**2/2)**0.5))
         self.dir = direction
+    def move(self):
+        self.rect_1.center += self.dir*ball_speed
+        self.rect_2.center += self.dir*ball_speed
     def draw(self):
         pygame.draw.circle(screen,light,self.rect_1.center,self.r)
         
