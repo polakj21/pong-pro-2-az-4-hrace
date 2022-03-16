@@ -21,6 +21,17 @@ class wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = start
 
+#míček
+class ball():
+    def __init__(self,center,r,direction):
+        self.r = r
+        self.rect_1 = pygame.Rect(center[0]-r,center[1]-r,2*r,2*r)
+        self.rect_2 = pygame.Rect(center[0]-(r**2/2)**0.5,center[1]-(r**2/2)**0.5,2*((r**2/2)**0.5),2*((r**2/2)**0.5))
+        self.dir = direction
+    def draw(self):
+        pygame.draw.circle(screen,light,self.rect_1.center,self.r)
+        
+
 #vertikální hráč
 class ver_player(pygame.sprite.Sprite):
     def __init__(self,pos,width,heigth,up,down):
@@ -37,6 +48,7 @@ class ver_player(pygame.sprite.Sprite):
             self.rect.y -= player_speed
         if keys[self.down]:
             self.rect.y += player_speed
+            
 #horizontáln hráč
 class hor_player(pygame.sprite.Sprite):
     def __init__(self,pos,width,heigth,left,right):
@@ -53,4 +65,3 @@ class hor_player(pygame.sprite.Sprite):
             self.rect.x -= player_speed
         if keys[self.right]:
             self.rect.x += player_speed
-            

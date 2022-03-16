@@ -9,8 +9,11 @@ player_distance = 70
 
 #vyvolání spriteů
 walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
+
 players = pygame.sprite.Group(ver_player(player_distance,25,80,pygame.K_w,pygame.K_s),ver_player(WIDTH-player_distance,25,80,pygame.K_UP,pygame.K_DOWN),
                               hor_player(player_distance,80,25,pygame.K_KP4,pygame.K_KP6),hor_player(HEIGHT-player_distance,80,25,pygame.K_g,pygame.K_j))
+
+ball = ball((500,400),20,"dir")
 
 #koize
 def player_x_walls():
@@ -47,6 +50,7 @@ while True:
     screen.fill(darker)
     walls.draw(screen)
     players.draw(screen)
+    ball.draw()
     
     pygame.display.update()
     clock.tick(60)
