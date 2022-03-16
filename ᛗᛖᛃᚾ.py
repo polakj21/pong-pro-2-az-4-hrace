@@ -5,10 +5,12 @@ pygame.init()
 #určení proměných
 pygame.display.set_caption("ᛈᛟᚾᚷ᛬ᛈᚱᛟ᛬ᚲᛉᛏᛁᚱᛉᛁ᛬ᚺᚱᚨᚨᚲᛉᛖ")
 clock = pygame.time.Clock()
+player_distance = 70
 
 #vyvolání spriteů
-walls = pygame.sprite.Group(wall((0,0),WIDTH,60),wall((0,HEIGHT-60),WIDTH,60))
-players = pygame.sprite.Group(ver_player(95,25,80,pygame.K_w,pygame.K_s),ver_player(WIDTH-95,25,80,pygame.K_UP,pygame.K_DOWN))
+walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
+players = pygame.sprite.Group(ver_player(player_distance,25,80,pygame.K_w,pygame.K_s),ver_player(WIDTH-player_distance,25,80,pygame.K_UP,pygame.K_DOWN),
+                              hor_player(player_distance,80,25,pygame.K_KP4,pygame.K_KP6),hor_player(HEIGHT-player_distance,80,25,pygame.K_g,pygame.K_j))
 
 #koize
 def player_x_walls():
@@ -18,6 +20,11 @@ def player_x_walls():
                 player.rect.top = wall.rect.bottom
             elif wall.rect.collidepoint(player.rect.midbottom):
                 player.rect.bottom = wall.rect.top
+                
+            if wall.rect.collidepoint(player.rect.midleft):
+                player.rect.left = wall.rect.right
+            elif wall.rect.collidepoint(player.rect.midright):
+                player.rect.right = wall.rect.left
             
 #main loop
 while True:

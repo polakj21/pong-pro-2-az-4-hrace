@@ -37,4 +37,20 @@ class ver_player(pygame.sprite.Sprite):
             self.rect.y -= player_speed
         if keys[self.down]:
             self.rect.y += player_speed
-        
+#horizontáln hráč
+class hor_player(pygame.sprite.Sprite):
+    def __init__(self,pos,width,heigth,left,right):
+        super().__init__()
+        self.image = pygame.Surface((width,heigth))
+        self.image.fill(light)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH//2,pos)
+        self.left = left
+        self.right = right
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[self.left]:
+            self.rect.x -= player_speed
+        if keys[self.right]:
+            self.rect.x += player_speed
+            
