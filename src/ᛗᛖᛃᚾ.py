@@ -11,14 +11,31 @@ ball_timeout = 0
 timeout = 9
 change_vector = pygame.math.Vector2(0.2,-0.2)
 
+sets = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),40,HEIGHT-(83*2)),True],
+        [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(83*2),40),True],
+        [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-40,83),40,HEIGHT-(83*2)),True],
+        [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-40),WIDTH-(83*2),40),True]]
+
 #vyvolání spriteů
 walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
+players = pygame.sprite.Group()
+branky = pygame.sprite.Group()
 
-players = pygame.sprite.Group(ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),
-                              hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3))
+def vyvolání():
+    global walls,players,branky
+    walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
+    players = pygame.sprite.Group()
+    branky = pygame.sprite.Group()
+    for option in sets:
+        if option[3]:
+            players.add(option[0])
+            branky.add(option[1])
+        else:
+            wall.add(option[2])
 
 ball_dir = pygame.math.Vector2(1,-1)
 ball = ball((250,200),20,ball_dir.normalize())
+vyvolání()
 
 #koize
 def player_x_walls():
@@ -134,6 +151,7 @@ while True:
     
     #vykreslení
     screen.fill(darker)
+    branky.draw(screen)
     walls.draw(screen)
     players.draw(screen)
     ball.draw()

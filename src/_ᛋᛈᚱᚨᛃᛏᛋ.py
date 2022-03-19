@@ -22,6 +22,26 @@ class wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = start
 
+#"branky"
+class branka(pygame.sprite.Sprite):
+    def __init__(self,pos,width,heigth,_id):
+        super().__init__()
+        self.color = [255,255,255]
+        self.image = pygame.Surface((width,heigth))
+        self.image.fill(self.color)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = pos
+        self.id = _id
+        self.lives = 5
+    def color_change(self,_id):
+        self.color[_id] -= 51
+        self.image.fill(self.color)
+        self.lives -= 1
+    def restart(self):
+        self.color = [255,255,255]
+        self.image.fill(self.color)
+        self.lives = 5
+
 #míček
 class ball():
     def __init__(self,center,r,direction):
