@@ -2,7 +2,7 @@ import pygame
 pygame.init()
 
 #určení proměných
-WIDTH,HEIGHT =700,700
+WIDTH,HEIGHT,HEIGHT_2 = 700,700,449
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 CENTER = (WIDTH//2,HEIGHT//2)
 
@@ -22,6 +22,20 @@ number_2 = chiller.render("2",False,dark)
 number_1 = chiller.render("1",False,dark)
 number_rect = number_3.get_rect()
 number_rect.center = CENTER
+
+restart_0 = chiller.render("RESTART",False,light)
+restart_1 = chiller.render("¤RESTART¤",False,lighter)
+restart_0_rect = restart_0.get_rect()
+restart_0_rect.center = (WIDTH//2,2*HEIGHT_2//4)
+restart_1_rect = restart_1.get_rect()
+restart_1_rect.center = (WIDTH//2-3,2*HEIGHT_2//4)
+
+menu_0 = chiller.render("MENU",False,light)
+menu_1 = chiller.render("¤MENU¤",False,lighter)
+menu_0_rect = menu_0.get_rect()
+menu_0_rect.center = (WIDTH//2,3*HEIGHT_2//4)
+menu_1_rect = menu_1.get_rect()
+menu_1_rect.center = (WIDTH//2,3*HEIGHT_2//4)
 
 #nehybné zdi
 class wall(pygame.sprite.Sprite):

@@ -6,7 +6,7 @@ pygame.init()
 pygame.display.set_caption("ᛈᛟᚾᚷ᛬ᛈᚱᛟ᛬ᚲᛉᛏᛁᚱᛉᛁ᛬ᚺᚱᚨᚨᚲᛉᛖ")
 clock = pygame.time.Clock()
 player_distance = 70
-ende = True
+state = "countdown"
 new_dir = None
 countdown_time = 180
 
@@ -131,7 +131,7 @@ def ball_x_player():
             ball.id = player.id
 
 def ball_x_branky():
-    global sets,ende,new_dir
+    global sets,state,new_dir
     for branka in branky:
         if branka.rect.colliderect(ball.rect_2):
             if branka.id == 0:
@@ -146,7 +146,7 @@ def ball_x_branky():
             for player in players:
                 player.restart()
                 
-            ende = True
+            state = "countdown"
             ball.rect_1.center = CENTER
             ball.rect_2.center = CENTER
             branka.color_change(ball.id)
@@ -191,9 +191,9 @@ def countdown(time):
         ball.draw()
         screen.blit(number_1,number_rect)
     if time == 0:
-        return False,180
+        return "game",180
     else:
-        return True,time-1
+        return "countdown",time-1
 
 #main loop
 while True:
@@ -208,7 +208,8 @@ while True:
         pygame.quit()
         sys.exit()
         
-    if not ende:
+    #hra
+    if state == "game":
         #update
         players.update()
         player_x_walls()
@@ -218,6 +219,8 @@ while True:
         ball.move()
         ball_x_branky()
         ball_timeout -=1
+        if len(players) == 1:
+            state = "win"
         
         #vykreslení
         screen.fill(darker)
@@ -225,8 +228,45 @@ while True:
         walls.draw(screen)
         players.draw(screen)
         ball.draw()
+        
+    #mezera mezi koli
+    elif state == "countdown":
+        state,countdown_time = countdown(countdown_time)
+        
+    #vítězná obrazovka
     else:
-        ende,countdown_time = countdown(countdown_time)
-    
+        screen = pygame.display.set_mode((WIDTH,HEIGHT_2))
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        
+        for player in players:
+            win_text = chiller.render("Player "+str(player.id+1)+" has won!",False,light)
+        win_rect = win_text.get_rect()
+        win_rect.center = (WIDTH//2,HEIGHT_2//4)
+        
+        screen.fill(dark)
+        screen.blit(win_text,win_rect)
+        if restart_0_rect.collidepoint(mouse_pos):
+            screen.blit(restart_1,restart_1_rect)
+            if mouse_pressed[0]:
+                for part in sets:
+                    part[0].restart()
+                    part[1].restart()
+                    part[3] = True
+                state = "countdown"
+                vyvolání()
+                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                ball.dir = pygame.math.Vector2(1,0)
+                ball.rect_1.center = ball.rect_2.center = CENTER
+                
+        else:
+            screen.blit(restart_0,restart_0_rect)
+        if menu_0_rect.collidepoint(mouse_pos):
+            screen.blit(menu_1,menu_1_rect)
+            if mouse_pressed[0]:
+                pass
+        else:
+            screen.blit(menu_0,menu_0_rect)
+        
     pygame.display.update()
     clock.tick(60)
