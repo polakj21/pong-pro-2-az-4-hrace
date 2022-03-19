@@ -8,8 +8,8 @@ clock = pygame.time.Clock()
 player_distance = 70
 
 ball_timeout = 0
-timeout = 7
-change_vector = pygame.math.Vector2(0.3,-0.3)
+timeout = 9
+change_vector = pygame.math.Vector2(0.2,-0.2)
 
 #vyvolání spriteů
 walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
@@ -55,11 +55,55 @@ def ball_x_player():
             ball.dir.y = -ball.dir.y
             ball_timeout = timeout
             ball.id = player.id
+            if player.rect.collidepoint(ball.rect_1.midbottom):
+                ball.rect_1.bottom = player.rect.top
+            else:
+                ball.rect_1.top = player.rect.bottom
+            ball.rect_2.center = ball.rect_1.center
+            
+            #odchilka
+            if player.rect.center[0] > ball.rect_1.center[0]:
+                if player.rect.center[0] - ball.rect_1.center[0] > 10:
+                    ball.dir += change_vector
+                if player.rect.center[0] - ball.rect_1.center[0] > 20:
+                    ball.dir += change_vector
+                if player.rect.center[0] - ball.rect_1.center[0] > 30:
+                    ball.dir += change_vector
+            else:
+                if ball.rect_1.center[0] - player.rect.center[0] > 10:
+                    ball.dir -= change_vector
+                if ball.rect_1.center[0] - player.rect.center[0] > 20:
+                    ball.dir -= change_vector
+                if ball.rect_1.center[0] - player.rect.center[0] > 30:
+                    ball.dir -= change_vector
+            ball.dir.normalize_ip()
             
         elif player.rect.collidepoint(ball.rect_1.midright) or player.rect.collidepoint(ball.rect_1.midleft):
             ball.dir.x = -ball.dir.x
             ball_timeout = timeout
             ball.id = player.id
+            if player.rect.collidepoint(ball.rect_1.midleft):
+                ball.rect_1.left = player.rect.right
+            else:
+                ball.rect_1.right = player.rect.left
+            ball.rect_2.center = ball.rect_1.center
+            
+            #odchilka
+            if player.rect.center[1] > ball.rect_1.center[1]:
+                if player.rect.center[1] - ball.rect_1.center[1] > 10:
+                    ball.dir += change_vector
+                if player.rect.center[1] - ball.rect_1.center[1] > 20:
+                    ball.dir += change_vector
+                if player.rect.center[1] - ball.rect_1.center[1] > 30:
+                    ball.dir += change_vector
+            else:
+                if ball.rect_1.center[1] - player.rect.center[1] > 10:
+                    ball.dir -= change_vector
+                if ball.rect_1.center[1] - player.rect.center[1] > 20:
+                    ball.dir -= change_vector
+                if ball.rect_1.center[0] - player.rect.center[1] > 30:
+                    ball.dir -= change_vector
+            ball.dir.normalize_ip()
         
         elif player.rect.collidepoint(ball.rect_2.topleft) or player.rect.collidepoint(ball.rect_2.topright) or player.rect.collidepoint(ball.rect_2.bottomleft) or player.rect.collidepoint(ball.rect_2.bottomright):
             ball.dir = -ball.dir
