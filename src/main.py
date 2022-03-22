@@ -38,7 +38,6 @@ def vyvolání():
 
 ball_dir = pygame.math.Vector2(1,0)
 ball = ball((CENTER),20,ball_dir.normalize())
-vyvolání()
 
 #koize
 def player_x_walls():
@@ -259,7 +258,6 @@ while True:
         countdown_time = countdown(countdown_time)
         if countdown_time == 180:
             state = "game_4"
-            vyvolání()
         
     #vítězná obrazovka
     elif state == "win_4":

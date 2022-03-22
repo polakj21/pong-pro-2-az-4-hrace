@@ -56,7 +56,7 @@ three_players_0_rect.center = (WIDTH//2,2*HEIGHT_2//4)
 three_players_1_rect.center = (WIDTH//2+1,2*HEIGHT_2//4)
 
 
-#nehybné zdi
+#horizontální zdi
 class wall(pygame.sprite.Sprite):
     def __init__(self,start,width,height):
         super().__init__()
@@ -64,6 +64,14 @@ class wall(pygame.sprite.Sprite):
         self.image.fill(light)
         self.rect = self.image.get_rect()
         self.rect.topleft = start
+        
+#šikmé zdi
+class wierd_wall():
+    def __init__(topleft,topright,bottomright,bottomleft):
+        self.A,self.B,self.C,self.D = topleft,topright,bottomright,bottomleft
+        self.color = light
+    def draw():
+        pygame.draw.polygon(screen,self.color,(self.A,self.B,self.C,self.D))
 
 #"branky"
 class branka(pygame.sprite.Sprite):
@@ -145,3 +153,15 @@ class hor_player(pygame.sprite.Sprite):
             self.rect.x += player_speed
     def restart(self):
         self.rect.center = (WIDTH//2,self.pos)
+        
+#levá část trojuhelníku
+class left_triangel_player():
+    def __init__(topleft,topright,bottomright,bottomleft,up,down,_id):
+        self.A,self.B,self.C,self.D = topleft,topright,bottomright,bottomleft
+        self.color = light
+        self.id = _id
+        self.up = up
+        self.down = down
+    def draw():
+        pygame.draw.polygon(screen,self.color,(self.A,self.B,self.C,self.D))
+        
