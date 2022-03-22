@@ -1,12 +1,12 @@
 import pygame,sys
-from _ᛋᛈᚱᚨᛃᛏᛋ import *
+from sprites import *
 pygame.init()
 
 #určení proměných
 pygame.display.set_caption("ᛈᛟᚾᚷ᛬ᛈᚱᛟ᛬ᚲᛉᛏᛁᚱᛉᛁ᛬ᚺᚱᚨᚨᚲᛉᛖ")
 clock = pygame.time.Clock()
 player_distance = 70
-state = "countdown"
+state = "menu"
 new_dir = None
 countdown_time = 180
 
@@ -146,7 +146,7 @@ def ball_x_branky():
             for player in players:
                 player.restart()
                 
-            state = "countdown"
+            state = "countdown_4"
             ball.rect_1.center = CENTER
             ball.rect_2.center = CENTER
             branka.color_change(ball.id)
@@ -191,9 +191,9 @@ def countdown(time):
         ball.draw()
         screen.blit(number_1,number_rect)
     if time == 0:
-        return "game",180
+        return 180
     else:
-        return "countdown",time-1
+        return time-1
 
 #main loop
 while True:
@@ -207,9 +207,34 @@ while True:
     if keys[pygame.K_ESCAPE]:
         pygame.quit()
         sys.exit()
-        
-    #hra
-    if state == "game":
+    
+    #menu
+    if state == "menu":
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        screen.fill(dark)
+        if four_players_0_rect.collidepoint(mouse_pos):
+            screen.blit(four_players_1,four_players_1_rect)
+            if mouse_pressed[0]:
+                for part in sets:
+                    part[0].restart()
+                    part[1].restart()
+                    part[3] = True
+                state = "countdown_4"
+                vyvolání()
+                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                ball.dir = pygame.math.Vector2(1,0)
+                ball.rect_1.center = ball.rect_2.center = CENTER
+        else:
+            screen.blit(four_players_0,four_players_0_rect)
+        if three_players_0_rect.collidepoint(mouse_pos):
+            screen.blit(three_players_1,three_players_1_rect)
+        else:
+            screen.blit(three_players_0,three_players_0_rect)
+        screen.blit(menu_title,menu_title_rect)
+    
+    #hra pro čtyři hráče
+    elif state == "game_4":
         #update
         players.update()
         player_x_walls()
@@ -220,7 +245,7 @@ while True:
         ball_x_branky()
         ball_timeout -=1
         if len(players) == 1:
-            state = "win"
+            state = "win_4"
         
         #vykreslení
         screen.fill(darker)
@@ -230,11 +255,14 @@ while True:
         ball.draw()
         
     #mezera mezi koli
-    elif state == "countdown":
-        state,countdown_time = countdown(countdown_time)
+    elif state == "countdown_4":
+        countdown_time = countdown(countdown_time)
+        if countdown_time == 180:
+            state = "game_4"
+            vyvolání()
         
     #vítězná obrazovka
-    else:
+    elif state == "win_4":
         screen = pygame.display.set_mode((WIDTH,HEIGHT_2))
         mouse_pos = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()
@@ -253,8 +281,7 @@ while True:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
-                state = "countdown"
-                vyvolání()
+                state = "countdown_4"
                 screen = pygame.display.set_mode((WIDTH,HEIGHT))
                 ball.dir = pygame.math.Vector2(1,0)
                 ball.rect_1.center = ball.rect_2.center = CENTER
@@ -264,7 +291,7 @@ while True:
         if menu_0_rect.collidepoint(mouse_pos):
             screen.blit(menu_1,menu_1_rect)
             if mouse_pressed[0]:
-                pass
+                state = "menu"
         else:
             screen.blit(menu_0,menu_0_rect)
         

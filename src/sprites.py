@@ -3,7 +3,7 @@ pygame.init()
 
 #určení proměných
 WIDTH,HEIGHT,HEIGHT_2 = 700,700,449
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
+screen = pygame.display.set_mode((WIDTH,HEIGHT_2))
 CENTER = (WIDTH//2,HEIGHT//2)
 
 lighter = (224,248,208)
@@ -37,6 +37,25 @@ menu_0_rect.center = (WIDTH//2,3*HEIGHT_2//4)
 menu_1_rect = menu_1.get_rect()
 menu_1_rect.center = (WIDTH//2,3*HEIGHT_2//4)
 
+menu_title = chiller.render("CHOOSE YOUR GAMEMODE",False,light)
+menu_title_rect = menu_title.get_rect()
+menu_title_rect.center = (WIDTH//2,HEIGHT_2//5)
+
+four_players_0 = chiller.render("four players",False,light)
+four_players_1 = chiller.render("¤four players¤",False,lighter)
+four_players_0_rect = four_players_0.get_rect()
+four_players_1_rect = four_players_1.get_rect()
+four_players_0_rect.center = (WIDTH//2,2.5*HEIGHT_2//4)
+four_players_1_rect.center = (WIDTH//2+1,2.5*HEIGHT_2//4)
+
+three_players_0 = chiller.render("three players",False,light)
+three_players_1 = chiller.render("¤three players¤",False,lighter)
+three_players_0_rect = three_players_0.get_rect()
+three_players_1_rect = three_players_1.get_rect()
+three_players_0_rect.center = (WIDTH//2,2*HEIGHT_2//4)
+three_players_1_rect.center = (WIDTH//2+1,2*HEIGHT_2//4)
+
+
 #nehybné zdi
 class wall(pygame.sprite.Sprite):
     def __init__(self,start,width,height):
@@ -56,8 +75,6 @@ class branka(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
         self.id = _id
-        self.lives = 5
-        #self.lives = 1
     def color_change(self,_id):
         if _id != self.id:
             if _id > self.id: _id -= 1
@@ -70,6 +87,7 @@ class branka(pygame.sprite.Sprite):
         self.color = [255,255,255]
         self.image.fill(self.color)
         self.lives = 5
+        #self.lives = 1
 
 #míček
 class ball():
