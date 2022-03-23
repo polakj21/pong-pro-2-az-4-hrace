@@ -97,6 +97,12 @@ class branka(pygame.sprite.Sprite):
         self.lives = 5
         #self.lives = 1
 
+class left_triangel_branka():
+    def __init__(self):
+        pass
+    def restart(self):
+        pass
+
 #míček
 class ball():
     def __init__(self,center,r,direction):
@@ -156,12 +162,27 @@ class hor_player(pygame.sprite.Sprite):
         
 #levá část trojuhelníku
 class left_triangel_player():
-    def __init__(topleft,topright,bottomright,bottomleft,up,down,_id):
+    def __init__(self,topleft,topright,bottomright,bottomleft,up,down,_id):
         self.A,self.B,self.C,self.D = topleft,topright,bottomright,bottomleft
+        self.dirs = [topleft,topright,bottomright,bottomleft]
         self.color = light
         self.id = _id
         self.up = up
         self.down = down
-    def draw():
-        pygame.draw.polygon(screen,self.color,(self.A,self.B,self.C,self.D))
+        self.vector = (-0.33,-0.66)
+        
+    def draw(self):
+        pygame.draw.polygon(screen,self.color,self.dirs)
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[self.up]:
+            for direction in self.dirs:
+                direction[0] += self.vector[0]*player_speed
+                direction[1] += self.vector[1]*player_speed
+        if keys[self.down]:
+            for direction in self.dirs:
+                direction[0] -= self.vector[0]*player_speed
+                direction[1] -= self.vector[1]*player_speed
+    def restart(self):
+        pass
         

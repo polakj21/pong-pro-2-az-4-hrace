@@ -14,27 +14,54 @@ ball_timeout = 0
 timeout = 9
 change_vector = pygame.math.Vector2(0.15,-0.15)
 
-sets = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
+sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
         [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(82*2),83),True],
         [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
         [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
+sets_3 = [[hor_player(HEIGHT-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,2),branka((83,HEIGHT-40),WIDTH-(82*2),20,2),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
+          [left_triangel_player([300,300],[287.5,321.6],[287.5 + 50*1.33,321.6 + 50*1.66],[300 + 50*1.33,300 + 50*1.66],pygame.K_KP8,pygame.K_KP2,1),left_triangel_branka(),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
+          #[]
+          ]
+
 #vyvolání spriteů
-walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
+walls = pygame.sprite.Group()
 players = pygame.sprite.Group()
 branky = pygame.sprite.Group()
 
-def vyvolání():
+players_s,walls_s,branky_s = [],[],[]
+
+def vyvolání_4():
     global walls,players,branky
     walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
-    for option in sets:
+    for option in sets_4:
         if option[3]:
             players.add(option[0])
             branky.add(option[1])
         else:
             walls.add(option[2])
+            
+def vyvolání_3():
+    global walls,players,branky,players_s,walls_s
+    walls = pygame.sprite.Group(wall((WIDTH-82,HEIGHT-82),83,83),wall((0,HEIGHT-82),83,83))
+    players = pygame.sprite.Group()
+    branky = pygame.sprite.Group()
+    players_s,walls_s,branky_s = [],[],[]
+    for option_ind,option in enumerate(sets_3):
+        if option_ind == 0:
+            if option[3]:
+                players.add(option[0])
+                branky.add(option[1])
+            else:
+                walls.add(option[2])
+        else:
+            if option[3]:
+                players_s.append(option[0])
+                branky_s.append(option[1])
+            else:
+                walls_s.append(option[2])
 
 ball_dir = pygame.math.Vector2(1,0)
 ball = ball((CENTER),20,ball_dir.normalize())
@@ -130,7 +157,7 @@ def ball_x_player():
             ball.id = player.id
 
 def ball_x_branky():
-    global sets,state,new_dir
+    global sets_4,state,new_dir
     for branka in branky:
         if branka.rect.colliderect(ball.rect_2):
             if branka.id == 0:
@@ -152,13 +179,13 @@ def ball_x_branky():
             branka.lives -= 1
             
             if branka.lives == 0:
-                sets[branka.id][3] = False
-                vyvolání()
-                if ball.id == 0 and sets[0][3]:
+                sets_4[branka.id][3] = False
+                vyvolání_4()
+                if ball.id == 0 and sets_4[0][3]:
                     new_dir = pygame.math.Vector2(-1,0)
-                elif ball.id == 1 and sets[1][3]:
+                elif ball.id == 1 and sets_4[1][3]:
                     new_dir = pygame.math.Vector2(0,-1)
-                elif ball.id == 2 and sets[2][3]:
+                elif ball.id == 2 and sets_4[2][3]:
                     new_dir = pygame.math.Vector2(1,0)
                 else:
                     new_dir = pygame.math.Vector2(0,1)
@@ -173,6 +200,8 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
+        for player in players_s:
+            player.draw()
         ball.draw()
         screen.blit(number_3,number_rect)
     if time == 120:
@@ -180,6 +209,8 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
+        for player in players_s:
+            player.draw()
         ball.draw()
         screen.blit(number_2,number_rect)
     if time == 60:
@@ -187,6 +218,8 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
+        for player in players_s:
+            player.draw()
         ball.draw()
         screen.blit(number_1,number_rect)
     if time == 0:
@@ -215,12 +248,12 @@ while True:
         if four_players_0_rect.collidepoint(mouse_pos):
             screen.blit(four_players_1,four_players_1_rect)
             if mouse_pressed[0]:
-                for part in sets:
+                for part in sets_4:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
                 state = "countdown_4"
-                vyvolání()
+                vyvolání_4()
                 screen = pygame.display.set_mode((WIDTH,HEIGHT))
                 ball.dir = pygame.math.Vector2(1,0)
                 ball.rect_1.center = ball.rect_2.center = CENTER
@@ -228,6 +261,16 @@ while True:
             screen.blit(four_players_0,four_players_0_rect)
         if three_players_0_rect.collidepoint(mouse_pos):
             screen.blit(three_players_1,three_players_1_rect)
+            if mouse_pressed[0]:
+                for part in sets_3:
+                    part[0].restart()
+                    part[1].restart()
+                    part[3] = True
+                state = "countdown_3"
+                vyvolání_3()
+                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                ball.dir = pygame.math.Vector2(0,1)
+                ball.rect_1.center = ball.rect_2.center = CENTER
         else:
             screen.blit(three_players_0,three_players_0_rect)
         screen.blit(menu_title,menu_title_rect)
@@ -252,12 +295,40 @@ while True:
         walls.draw(screen)
         players.draw(screen)
         ball.draw()
+            
+    #hra pro tři hráče
+    elif state == "game_3":
+        #update
+        players.update()
+        for player in players_s:
+            player.update()
+        player_x_walls()
+        if ball_timeout <= 0:
+            ball_x_walls()
+            ball_x_player()
+        ball.move()
+        ball_x_branky()
+        ball_timeout -=1
         
+        #vykreslení
+        screen.fill(darker)
+        branky.draw(screen)
+        walls.draw(screen)
+        players.draw(screen)
+        for player in players_s:
+            player.draw()
+        ball.draw()
+            
     #mezera mezi koli
     elif state == "countdown_4":
         countdown_time = countdown(countdown_time)
         if countdown_time == 180:
             state = "game_4"
+    
+    elif state == "countdown_3":
+        countdown_time = countdown(countdown_time)
+        if countdown_time == 180:
+            state = "game_3"
         
     #vítězná obrazovka
     elif state == "win_4":
@@ -275,7 +346,7 @@ while True:
         if restart_0_rect.collidepoint(mouse_pos):
             screen.blit(restart_1,restart_1_rect)
             if mouse_pressed[0]:
-                for part in sets:
+                for part in sets_4:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
