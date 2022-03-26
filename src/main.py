@@ -11,7 +11,7 @@ new_dir = None
 countdown_time = 180
 
 ball_timeout = 0
-timeout = 9
+timeout = 6
 change_vector = pygame.math.Vector2(0.15,-0.15)
 
 sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
@@ -19,10 +19,9 @@ sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20
         [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
         [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
-sets_3 = [[hor_player(HEIGHT-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT-40),WIDTH-(82*2),20,1),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
-          [left_triangel_player(pygame.math.Vector2(500,500),pygame.K_KP8,pygame.K_KP2,2),left_triangel_branka(),left_triangel_wall(),True],
-          #[]
-          ]
+sets_3 = [[hor_player(HEIGHT_3-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT_3-40),WIDTH-(82*2),20,1),wall((83,HEIGHT_3-82),WIDTH-(82*2),83),True],
+          [left_triangel_player(pygame.math.Vector2(WIDTH-68,HEIGHT_3-82),pygame.K_KP8,pygame.K_KP2,2),left_triangel_branka(),left_triangel_wall(pygame.math.Vector2(80,60),82,60),True],
+          [right_triangel_player(pygame.math.Vector2(68,HEIGHT_3-82),pygame.K_w,pygame.K_s,0),left_triangel_branka(),left_triangel_wall(pygame.math.Vector2(80,60),82,60),True]]
 
 #vyvolání spriteů
 walls = pygame.sprite.Group()
@@ -45,11 +44,12 @@ def vyvolání_4():
             
 def vyvolání_3():
     global walls,players,branky,players_s,walls_s
-    walls = pygame.sprite.Group(wall((WIDTH-82,HEIGHT-82),83,83),wall((0,HEIGHT-82),83,83))
+    walls = pygame.sprite.Group(wall((WIDTH-82,HEIGHT_3-82),83,83),wall((0,HEIGHT_3-82),83,83),wall((WIDTH//2-21,42),41,40))
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
     players_s = []
-    walls_s = []
+    walls_s = [left_triangel_wall((WIDTH-82,HEIGHT_3-82),100,50),right_triangel_wall((82,HEIGHT_3-82),100,50),
+               left_triangel_wall((WIDTH//2+20,81),200,-100),right_triangel_wall((WIDTH//2-20,81),200,-100)]
     branky_s = []
     for option_ind,option in enumerate(sets_3):
         if option_ind == 0:
@@ -276,7 +276,7 @@ while True:
                     part[3] = True
                 state = "countdown_3"
                 vyvolání_3()
-                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                screen = pygame.display.set_mode((WIDTH,HEIGHT_3))
                 ball.dir = pygame.math.Vector2(0,1)
                 ball.rect_1.center = ball.rect_2.center = CENTER
         else:

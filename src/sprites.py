@@ -2,7 +2,7 @@ import pygame
 pygame.init()
 
 #určení proměných
-WIDTH,HEIGHT,HEIGHT_2 = 700,700,449
+WIDTH,HEIGHT,HEIGHT_2,HEIGHT_3 = 700,700,449,590
 screen = pygame.display.set_mode((WIDTH,HEIGHT_2))
 CENTER = (WIDTH//2,HEIGHT//2)
 
@@ -67,10 +67,26 @@ class wall(pygame.sprite.Sprite):
         
 #šikmé zdi
 class left_triangel_wall():
-    def __init__(self):
-        pass
+    def __init__(self,topleft,width,heigth):
+        v = pygame.math.Vector2(-1,0).rotate(60)
+        v1 = pygame.math.Vector2(-1,0).rotate(150)
+        self.a = topleft
+        self.b = width*v1+topleft
+        self.c = self.b - heigth*v
+        self.d = self.a - heigth*v
     def draw(self):
-        pass
+        pygame.draw.polygon(screen,light,(self.a,self.b,self.c,self.d))
+
+class right_triangel_wall():
+    def __init__(self,topright,width,heigth):
+        v = pygame.math.Vector2(-1,0).rotate(120)
+        v1 = pygame.math.Vector2(-1,0).rotate(30)
+        self.a = topright
+        self.b = topright+width*v1
+        self.c = self.b - heigth*v
+        self.d = self.a - heigth*v
+    def draw(self):
+        pygame.draw.polygon(screen,light,(self.a,self.b,self.c,self.d))
 
 #"branky"
 class branka(pygame.sprite.Sprite):
@@ -167,12 +183,42 @@ class left_triangel_player():
         self.id = _id
         self.down = down
         self.up = up
-        self.center = center
         self.v = pygame.math.Vector2(-1,0).rotate(60)
+        self.center = self.v*246.5+center
     def draw(self):
         center = self.center
         v = self.v
         v1 = pygame.math.Vector2(-1,0).rotate(150)
+        top = v*50+center
+        bottom = v*(-50)+center
+        
+        a = v1*12.5 + top
+        b = v1*(-12.5) + top
+        c = v1*(-12.5) + bottom
+        d = v1*12.5 + bottom
+        
+        pygame.draw.polygon(screen,light,(a,b,c,d))
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[self.up]:
+            self.center += self.v*player_speed
+        if keys[self.down]:
+            self.center -= self.v*player_speed
+    def restart(self):
+        pass
+    
+#pravá část trojuhelníku
+class right_triangel_player():
+    def __init__(self,center,up,down,_id):
+        self.id = _id
+        self.down = down
+        self.up = up
+        self.v = pygame.math.Vector2(-1,0).rotate(120)
+        self.center = self.v*246.5+center
+    def draw(self):
+        center = self.center
+        v = self.v
+        v1 = pygame.math.Vector2(-1,0).rotate(30)
         top = v*50+center
         bottom = v*(-50)+center
         
