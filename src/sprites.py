@@ -66,12 +66,11 @@ class wall(pygame.sprite.Sprite):
         self.rect.topleft = start
         
 #šikmé zdi
-class wierd_wall():
-    def __init__(topleft,topright,bottomright,bottomleft):
-        self.A,self.B,self.C,self.D = topleft,topright,bottomright,bottomleft
-        self.color = light
-    def draw():
-        pygame.draw.polygon(screen,self.color,(self.A,self.B,self.C,self.D))
+class left_triangel_wall():
+    def __init__(self):
+        pass
+    def draw(self):
+        pass
 
 #"branky"
 class branka(pygame.sprite.Sprite):
@@ -99,6 +98,8 @@ class branka(pygame.sprite.Sprite):
 
 class left_triangel_branka():
     def __init__(self):
+        pass
+    def draw(self):
         pass
     def restart(self):
         pass
@@ -162,27 +163,31 @@ class hor_player(pygame.sprite.Sprite):
         
 #levá část trojuhelníku
 class left_triangel_player():
-    def __init__(self,topleft,topright,bottomright,bottomleft,up,down,_id):
-        self.A,self.B,self.C,self.D = topleft,topright,bottomright,bottomleft
-        self.dirs = [topleft,topright,bottomright,bottomleft]
-        self.color = light
+    def __init__(self,center,up,down,_id):
         self.id = _id
-        self.up = up
         self.down = down
-        self.vector = (-0.33,-0.66)
-        
+        self.up = up
+        self.center = center
+        self.v = pygame.math.Vector2(-1,0).rotate(60)
     def draw(self):
-        pygame.draw.polygon(screen,self.color,self.dirs)
+        center = self.center
+        v = self.v
+        v1 = pygame.math.Vector2(-1,0).rotate(150)
+        top = v*50+center
+        bottom = v*(-50)+center
+        
+        a = v1*12.5 + top
+        b = v1*(-12.5) + top
+        c = v1*(-12.5) + bottom
+        d = v1*12.5 + bottom
+        
+        pygame.draw.polygon(screen,light,(a,b,c,d))
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[self.up]:
-            for direction in self.dirs:
-                direction[0] += self.vector[0]*player_speed
-                direction[1] += self.vector[1]*player_speed
+            self.center += self.v*player_speed
         if keys[self.down]:
-            for direction in self.dirs:
-                direction[0] -= self.vector[0]*player_speed
-                direction[1] -= self.vector[1]*player_speed
+            self.center -= self.v*player_speed
     def restart(self):
         pass
         

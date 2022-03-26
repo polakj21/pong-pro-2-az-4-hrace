@@ -19,8 +19,8 @@ sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20
         [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
         [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
-sets_3 = [[hor_player(HEIGHT-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,2),branka((83,HEIGHT-40),WIDTH-(82*2),20,2),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
-          [left_triangel_player([300,300],[287.5,321.6],[287.5 + 50*1.33,321.6 + 50*1.66],[300 + 50*1.33,300 + 50*1.66],pygame.K_KP8,pygame.K_KP2,1),left_triangel_branka(),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
+sets_3 = [[hor_player(HEIGHT-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT-40),WIDTH-(82*2),20,1),wall((83,HEIGHT-82),WIDTH-(82*2),83),True],
+          [left_triangel_player(pygame.math.Vector2(500,500),pygame.K_KP8,pygame.K_KP2,2),left_triangel_branka(),left_triangel_wall(),True],
           #[]
           ]
 
@@ -48,7 +48,9 @@ def vyvolání_3():
     walls = pygame.sprite.Group(wall((WIDTH-82,HEIGHT-82),83,83),wall((0,HEIGHT-82),83,83))
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
-    players_s,walls_s,branky_s = [],[],[]
+    players_s = []
+    walls_s = []
+    branky_s = []
     for option_ind,option in enumerate(sets_3):
         if option_ind == 0:
             if option[3]:
@@ -202,6 +204,8 @@ def countdown(time):
         players.draw(screen)
         for player in players_s:
             player.draw()
+        for wall in walls_s:
+            wall.draw()
         ball.draw()
         screen.blit(number_3,number_rect)
     if time == 120:
@@ -211,6 +215,8 @@ def countdown(time):
         players.draw(screen)
         for player in players_s:
             player.draw()
+        for wall in walls_s:
+            wall.draw()
         ball.draw()
         screen.blit(number_2,number_rect)
     if time == 60:
@@ -220,6 +226,8 @@ def countdown(time):
         players.draw(screen)
         for player in players_s:
             player.draw()
+        for wall in walls_s:
+            wall.draw()
         ball.draw()
         screen.blit(number_1,number_rect)
     if time == 0:
@@ -317,6 +325,9 @@ while True:
         players.draw(screen)
         for player in players_s:
             player.draw()
+        for wall in walls_s:
+            wall.draw()
+        
         ball.draw()
             
     #mezera mezi koli
