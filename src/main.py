@@ -20,8 +20,8 @@ sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20
         [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
 sets_3 = [[hor_player(HEIGHT_3-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT_3-40),WIDTH-(82*2),20,1),wall((83,HEIGHT_3-82),WIDTH-(82*2),83),True],
-          [left_triangel_player(pygame.math.Vector2(WIDTH-68,HEIGHT_3-82),pygame.K_KP8,pygame.K_KP2,2),left_triangel_branka(),left_triangel_wall(pygame.math.Vector2(80,60),82,60),True],
-          [right_triangel_player(pygame.math.Vector2(68,HEIGHT_3-82),pygame.K_w,pygame.K_s,0),left_triangel_branka(),left_triangel_wall(pygame.math.Vector2(80,60),82,60),True]]
+          [right_triangel_player(pygame.math.Vector2(WIDTH-68,HEIGHT_3-82),pygame.K_KP8,pygame.K_KP2,2),right_triangel_branka(),right_triangel_wall(pygame.math.Vector2(80,60),82,60),True],
+          [left_triangel_player(pygame.math.Vector2(68,HEIGHT_3-82),pygame.K_w,pygame.K_s,0),right_triangel_branka(),right_triangel_wall(pygame.math.Vector2(80,60),82,60),True]]
 
 #vyvolání spriteů
 walls = pygame.sprite.Group()
@@ -48,8 +48,8 @@ def vyvolání_3():
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
     players_s = []
-    walls_s = [left_triangel_wall((WIDTH-82,HEIGHT_3-82),100,50),right_triangel_wall((82,HEIGHT_3-82),100,50),
-               left_triangel_wall((WIDTH//2+20,81),200,-100),right_triangel_wall((WIDTH//2-20,81),200,-100)]
+    walls_s = [right_triangel_wall((WIDTH-82,HEIGHT_3-82),100,50),left_triangel_wall((82,HEIGHT_3-82),100,50),
+               right_triangel_wall((WIDTH//2+20,81),200,-100),left_triangel_wall((WIDTH//2-20,81),200,-100)]
     branky_s = []
     for option_ind,option in enumerate(sets_3):
         if option_ind == 0:
@@ -88,9 +88,21 @@ def ball_x_walls():
         if wall.rect.collidepoint(ball.rect_1.midtop) or wall.rect.collidepoint(ball.rect_1.midbottom):
             ball.dir.y = -ball.dir.y
             ball_timeout = timeout
+            if wall.rect.collidepoint(ball.rect_1.midtop):
+                ball.rect_1.top = wall.rect.bottom
+                ball.rect_2.center = ball.rect_1.center
+            else:
+                ball.rect_1.bottom = wall.rect.top
+                ball.rect_2.center = ball.rect_1.center
         elif wall.rect.collidepoint(ball.rect_1.midright) or wall.rect.collidepoint(ball.rect_1.midleft):
             ball.dir.x = -ball.dir.x
             ball_timeout = timeout
+            if wall.rect.collidepoint(ball.rect_1.midright):
+                ball.rect_1.right = wall.rect.left
+                ball.rect_2.center = ball.rect_1.center
+            else:
+                ball.rect_1.left = wall.rect.right
+                ball.rect_2.center = ball.rect_1.center
         
         elif wall.rect.collidepoint(ball.rect_2.topleft) or wall.rect.collidepoint(ball.rect_2.topright) or wall.rect.collidepoint(ball.rect_2.bottomleft) or wall.rect.collidepoint(ball.rect_2.bottomright):
             ball.dir = -ball.dir
@@ -157,6 +169,57 @@ def ball_x_player():
             ball.dir = -ball.dir
             ball_timeout = timeout
             ball.id = player.id
+
+def ball_x_player_s():
+    for player in players_s:
+        if player.collide(ball.rect_1.midleft)[0] or player.collide(ball.rect_1.midright)[0]:
+            ball.dir.x = -ball.dir.x
+            ball_timeout = timeout
+            ball.id = player.id
+            if player.collide(ball.rect_1.midleft)[0]:
+                ball.rect_1.left = int(player.collide(ball.rect_1.midleft)[2])
+            else:
+                ball.rect_1.right = int(player.collide(ball.rect_1.midright)[1])
+            ball.rect_2.center = ball.rect_1.center
+                
+        elif player.collide(ball.rect_1.midtop)[0] or player.collide(ball.rect_1.midbottom)[0]:
+            ball.dir.y = -ball.dir.y
+            ball_timeout = timeout
+            ball.id = player.id
+            if player.collide(ball.rect_1.midtop)[0]:
+                ball.rect_1.top = int(player.collide(ball.rect_1.midtop)[4])
+            else:
+                ball.rect_1.bottom = int(player.collide(ball.rect_1.midbottom)[3])
+            ball.rect_2.center = ball.rect_1.center
+            
+        elif player.collide(ball.rect_2.topleft)[0] or player.collide(ball.rect_2.topright)[0] or player.collide(ball.rect_2.bottomleft)[0] or player.collide(ball.rect_2.bottomright)[0]:
+            ball.dir = -ball.dir
+            ball_timeout = timeout
+            ball.id = player.id
+        
+def ball_x_walls_s():
+    for wall in walls_s:
+        if wall.collide(ball.rect_1.midleft)[0] or wall.collide(ball.rect_1.midright)[0]:
+            ball.dir.x = -ball.dir.x
+            ball_timeout = timeout
+            if wall.collide(ball.rect_1.midleft)[0]:
+                ball.rect_1.left = int(wall.collide(ball.rect_1.midleft)[2])
+            else:
+                ball.rect_1.right = int(wall.collide(ball.rect_1.midright)[1])
+            ball.rect_2.center = ball.rect_1.center
+                
+        elif wall.collide(ball.rect_1.midtop)[0] or wall.collide(ball.rect_1.midbottom)[0]:
+            ball.dir.y = -ball.dir.y
+            ball_timeout = timeout
+            if wall.collide(ball.rect_1.midtop)[0]:
+                ball.rect_1.top = int(wall.collide(ball.rect_1.midtop)[4])
+            else:
+                ball.rect_1.bottom = int(wall.collide(ball.rect_1.midbottom)[3])
+            ball.rect_2.center = ball.rect_1.center
+            
+        elif wall.collide(ball.rect_2.topleft)[0] or wall.collide(ball.rect_2.topright)[0] or wall.collide(ball.rect_2.bottomleft)[0] or wall.collide(ball.rect_2.bottomright)[0]:
+            ball.dir = -ball.dir
+            ball_timeout = timeout
 
 def ball_x_branky():
     global sets_4,state,new_dir
@@ -314,6 +377,8 @@ while True:
         if ball_timeout <= 0:
             ball_x_walls()
             ball_x_player()
+            ball_x_player_s()
+            ball_x_walls_s()
         ball.move()
         ball_x_branky()
         ball_timeout -=1

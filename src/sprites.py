@@ -14,6 +14,11 @@ darker = (8,24,32)
 player_speed = 8
 ball_speed = 6
 
+tg60 = 1.73
+tg_60 = -1.73
+tg30 = 0.57
+tg_30 = -0.57
+
 #texty
 chiller = pygame.font.SysFont("Chiller",45)
 
@@ -66,25 +71,59 @@ class wall(pygame.sprite.Sprite):
         self.rect.topleft = start
         
 #šikmé zdi
-class left_triangel_wall():
+class right_triangel_wall():
     def __init__(self,topleft,width,heigth):
+        topleft = pygame.math.Vector2(topleft)
         v = pygame.math.Vector2(-1,0).rotate(60)
-        v1 = pygame.math.Vector2(-1,0).rotate(150)
+        self.v1 = pygame.math.Vector2(-1,0).rotate(150)
         self.a = topleft
-        self.b = width*v1+topleft
+        self.b = width*self.v1+topleft
         self.c = self.b - heigth*v
         self.d = self.a - heigth*v
+        
+        self.q01 = -tg60 * topleft.x + topleft.y
+        self.q02 = -tg60 * self.b.x + self.b.y
+        self.q11 = -tg_30 * self.b.x + self.b.y
+        self.q12 = -tg_30 * self.d.x + self.d.y
+    def collide(self,test_point):
+        x0 = -(-test_point[1]+self.q02)//tg60
+        x1 = -(-test_point[1]+self.q01)//tg60
+        y0 = -(tg_30*test_point[0] + self.q11)
+        y1 = -(tg_30*test_point[0] + self.q12)
+        #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        if x0 >= test_point[0] >= x1 and y0 <= test_point[1] <= y1:
+            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+            return True,x0,x1,y0,y1
+        else:
+            return False,None,None,None,None
     def draw(self):
         pygame.draw.polygon(screen,light,(self.a,self.b,self.c,self.d))
 
-class right_triangel_wall():
+class left_triangel_wall():
     def __init__(self,topright,width,heigth):
+        topright = pygame.math.Vector2(topright)
         v = pygame.math.Vector2(-1,0).rotate(120)
-        v1 = pygame.math.Vector2(-1,0).rotate(30)
+        self.v1 = pygame.math.Vector2(-1,0).rotate(30)
         self.a = topright
-        self.b = topright+width*v1
+        self.b = topright+width*self.v1
         self.c = self.b - heigth*v
         self.d = self.a - heigth*v
+        
+        self.q01 = -tg_60 * topright.x + topright.y
+        self.q02 = -tg_60 * self.b.x + self.b.y
+        self.q11 = -tg30 * self.b.x + self.b.y
+        self.q12 = -tg30 * self.d.x + self.d.y
+    def collide(self,test_point):
+        x0 = -(-test_point[1]+self.q02)//tg_60
+        x1 = -(-test_point[1]+self.q01)//tg_60
+        y0 = -(tg30*test_point[0] + self.q11)
+        y1 = -(tg30*test_point[0] + self.q12)
+        #print(-x0,-x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        if x1 >= test_point[0] >= x0 and y0 <= test_point[1] <= y1:
+            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+            return True,x0,x1,y0,y1
+        else:
+            return False,None,None,None,None
     def draw(self):
         pygame.draw.polygon(screen,light,(self.a,self.b,self.c,self.d))
 
@@ -112,7 +151,7 @@ class branka(pygame.sprite.Sprite):
         self.lives = 5
         #self.lives = 1
 
-class left_triangel_branka():
+class right_triangel_branka():
     def __init__(self):
         pass
     def draw(self):
@@ -178,17 +217,33 @@ class hor_player(pygame.sprite.Sprite):
         self.rect.center = (WIDTH//2,self.pos)
         
 #levá část trojuhelníku
-class left_triangel_player():
+class right_triangel_player():
     def __init__(self,center,up,down,_id):
         self.id = _id
         self.down = down
         self.up = up
         self.v = pygame.math.Vector2(-1,0).rotate(60)
         self.center = self.v*246.5+center
+        
+        self.v1 = pygame.math.Vector2(-1,0).rotate(150)
+        self.q01 = -tg60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
+        self.q02 = -tg60 * (self.v1*(-12.5) + self.v*50+self.center).x + (self.v1*(-12.5) + self.v*50+self.center).y
+        self.q11 = -tg_30 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
+        self.q12 = -tg_30 * (self.v1*12.5 + self.v*(-50)+self.center).x + (self.v1*12.5 + self.v*(-50)+self.center).y
+    def collide(self,test_point):
+        x0 = -(-test_point[1]+self.q02)//tg60
+        x1 = -(-test_point[1]+self.q01)//tg60
+        y0 = tg_30*test_point[0] + self.q11
+        y1 = tg_30*test_point[0] + self.q12
+        #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        if x0 <= test_point[0] <= x1 and y0 <= test_point[1] <= y1:
+            return True,x0,x1,y0,y1
+        else:
+            return False,None,None,None,None
     def draw(self):
         center = self.center
         v = self.v
-        v1 = pygame.math.Vector2(-1,0).rotate(150)
+        v1 = self.v1
         top = v*50+center
         bottom = v*(-50)+center
         
@@ -196,6 +251,8 @@ class left_triangel_player():
         b = v1*(-12.5) + top
         c = v1*(-12.5) + bottom
         d = v1*12.5 + bottom
+        self.q11 = -tg_30 * a.x + a.y
+        self.q12 = -tg_30 * d.x + d.y
         
         pygame.draw.polygon(screen,light,(a,b,c,d))
     def update(self):
@@ -208,17 +265,34 @@ class left_triangel_player():
         pass
     
 #pravá část trojuhelníku
-class right_triangel_player():
+class left_triangel_player():
     def __init__(self,center,up,down,_id):
         self.id = _id
         self.down = down
         self.up = up
         self.v = pygame.math.Vector2(-1,0).rotate(120)
         self.center = self.v*246.5+center
+        
+        self.v1 = pygame.math.Vector2(-1,0).rotate(30)
+        self.q01 = -tg_60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
+        self.q02 = -tg_60 * (self.v1*(-12.5) + self.v*50+self.center).x + (self.v1*(-12.5) + self.v*50+self.center).y
+        self.q11 = -tg30 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
+        self.q12 = -tg30 * (self.v1*12.5 + self.v*(-50)+self.center).x + (self.v1*12.5 + self.v*(-50)+self.center).y
+    def collide(self,test_point):
+        x0 = -(-test_point[1]+self.q02)//tg_60
+        x1 = -(-test_point[1]+self.q01)//tg_60
+        y0 = tg30*test_point[0] + self.q11
+        y1 = tg30*test_point[0] + self.q12
+        #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        if x1 <= test_point[0] <= x0 and y0 <= test_point[1] <= y1:
+            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+            return True,x0,x1,y0,y1
+        else:
+            return False,None,None,None,None
     def draw(self):
         center = self.center
         v = self.v
-        v1 = pygame.math.Vector2(-1,0).rotate(30)
+        v1 = self.v1
         top = v*50+center
         bottom = v*(-50)+center
         
@@ -235,5 +309,4 @@ class right_triangel_player():
         if keys[self.down]:
             self.center -= self.v*player_speed
     def restart(self):
-        pass
-        
+        pass     
