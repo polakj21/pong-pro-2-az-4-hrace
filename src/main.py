@@ -124,18 +124,18 @@ def ball_x_player():
             #odchilka
             if player.rect.center[0] > ball.rect_1.center[0]:
                 if player.rect.center[0] - ball.rect_1.center[0] > 10:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
                 if player.rect.center[0] - ball.rect_1.center[0] > 20:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
                 if player.rect.center[0] - ball.rect_1.center[0] > 30:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
             else:
                 if ball.rect_1.center[0] - player.rect.center[0] > 10:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
                 if ball.rect_1.center[0] - player.rect.center[0] > 20:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
                 if ball.rect_1.center[0] - player.rect.center[0] > 30:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
             ball.dir.normalize_ip()
             
         elif player.rect.collidepoint(ball.rect_1.midright) or player.rect.collidepoint(ball.rect_1.midleft):
@@ -151,18 +151,18 @@ def ball_x_player():
             #odchilka
             if player.rect.center[1] > ball.rect_1.center[1]:
                 if player.rect.center[1] - ball.rect_1.center[1] > 10:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
                 if player.rect.center[1] - ball.rect_1.center[1] > 20:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
                 if player.rect.center[1] - ball.rect_1.center[1] > 30:
-                    ball.dir += change_vector
+                    ball.dir.rotate_ip(6)
             else:
                 if ball.rect_1.center[1] - player.rect.center[1] > 10:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
                 if ball.rect_1.center[1] - player.rect.center[1] > 20:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
                 if ball.rect_1.center[0] - player.rect.center[1] > 30:
-                    ball.dir -= change_vector
+                    ball.dir.rotate_ip(-6)
             ball.dir.normalize_ip()
         
         elif player.rect.collidepoint(ball.rect_2.topleft) or player.rect.collidepoint(ball.rect_2.topright) or player.rect.collidepoint(ball.rect_2.bottomleft) or player.rect.collidepoint(ball.rect_2.bottomright):
@@ -374,11 +374,6 @@ while True:
         for player in players_s:
             player.update()
         player_x_walls()
-        if ball_timeout <= 0:
-            ball_x_walls()
-            ball_x_player()
-            ball_x_player_s()
-            ball_x_walls_s()
         ball.move()
         ball_x_branky()
         ball_timeout -=1
@@ -394,6 +389,13 @@ while True:
             wall.draw()
         
         ball.draw()
+        
+        
+        if ball_timeout <= 0:
+            ball_x_walls()
+            ball_x_player()
+            ball_x_player_s()
+            ball_x_walls_s()
             
     #mezera mezi koli
     elif state == "countdown_4":
@@ -403,6 +405,7 @@ while True:
     
     elif state == "countdown_3":
         countdown_time = countdown(countdown_time)
+        countdown_time = 180
         if countdown_time == 180:
             state = "game_3"
         

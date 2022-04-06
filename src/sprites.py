@@ -88,11 +88,13 @@ class right_triangel_wall():
     def collide(self,test_point):
         x0 = -(-test_point[1]+self.q02)//tg60
         x1 = -(-test_point[1]+self.q01)//tg60
-        y0 = -(tg_30*test_point[0] + self.q11)
-        y1 = -(tg_30*test_point[0] + self.q12)
+        y0 = tg_30*test_point[0] + self.q11
+        y1 = tg_30*test_point[0] + self.q12
         #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
-        if x0 >= test_point[0] >= x1 and y0 <= test_point[1] <= y1:
-            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        
+        #pygame.draw.polygon(screen,"blue",((x0,test_point[1]),(x1,test_point[1]),(test_point[0],y0),(test_point[0],y1)),width=3)
+        
+        if x0 >= test_point[0] >= x1 and y0 >= test_point[1] >= y1:
             return True,x0,x1,y0,y1
         else:
             return False,None,None,None,None
@@ -116,11 +118,13 @@ class left_triangel_wall():
     def collide(self,test_point):
         x0 = -(-test_point[1]+self.q02)//tg_60
         x1 = -(-test_point[1]+self.q01)//tg_60
-        y0 = -(tg30*test_point[0] + self.q11)
-        y1 = -(tg30*test_point[0] + self.q12)
+        y0 = tg30*test_point[0] + self.q11
+        y1 = tg30*test_point[0] + self.q12
         #print(-x0,-x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
-        if x1 >= test_point[0] >= x0 and y0 <= test_point[1] <= y1:
-            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        
+        #pygame.draw.polygon(screen,"red",((x0,test_point[1]),(x1,test_point[1]),(test_point[0],y0),(test_point[0],y1)),width=3)
+        
+        if x0 <= test_point[0] <= x1 and y0 >= test_point[1] >= y1:
             return True,x0,x1,y0,y1
         else:
             return False,None,None,None,None
@@ -236,6 +240,9 @@ class right_triangel_player():
         y0 = tg_30*test_point[0] + self.q11
         y1 = tg_30*test_point[0] + self.q12
         #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        
+        #pygame.draw.polygon(screen,"green",((x0,test_point[1]),(x1,test_point[1]),(test_point[0],y0),(test_point[0],y1)),width=3)
+        
         if x0 <= test_point[0] <= x1 and y0 <= test_point[1] <= y1:
             return True,x0,x1,y0,y1
         else:
@@ -271,6 +278,7 @@ class left_triangel_player():
         self.down = down
         self.up = up
         self.v = pygame.math.Vector2(-1,0).rotate(120)
+        #print(self.v)
         self.center = self.v*246.5+center
         
         self.v1 = pygame.math.Vector2(-1,0).rotate(30)
@@ -284,8 +292,10 @@ class left_triangel_player():
         y0 = tg30*test_point[0] + self.q11
         y1 = tg30*test_point[0] + self.q12
         #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
+        
+        #pygame.draw.polygon(screen,"yellow",((x0,test_point[1]),(x1,test_point[1]),(test_point[0],y0),(test_point[0],y1)),width=3)
+        
         if x1 <= test_point[0] <= x0 and y0 <= test_point[1] <= y1:
-            print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
             return True,x0,x1,y0,y1
         else:
             return False,None,None,None,None
@@ -302,6 +312,8 @@ class left_triangel_player():
         d = v1*12.5 + bottom
         
         pygame.draw.polygon(screen,light,(a,b,c,d))
+        self.q11 = -tg30 * a.x + a.y
+        self.q12 = -tg30 * d.x + d.y
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[self.up]:
