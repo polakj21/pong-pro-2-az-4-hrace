@@ -171,12 +171,69 @@ class ball():
         self.rect_2 = pygame.Rect(center[0]-(r**2/2)**0.5,center[1]-(r**2/2)**0.5,2*((r**2/2)**0.5),2*((r**2/2)**0.5))
         self.dir = direction
         self.id = 2
+        
+        self.rv0 = pygame.math.Vector2(-1,0).rotate(60)
+        self.rv1 = self.rv0.rotate(90)
+        self.rv2 = self.rv0.rotate(45)
+        self.rv3 = self.rv1.rotate(45)
+        
+        self.ra = self.rect_1.center + self.rv0*self.r
+        self.rb = self.rect_1.center + self.rv1*self.r
+        self.rc = self.rect_1.center - self.rv0*self.r
+        self.rd = self.rect_1.center - self.rv1*self.r
+        
+        self.re = self.rect_1.center + self.rv2*self.r
+        self.rf = self.rect_1.center + self.rv3*self.r
+        self.rg = self.rect_1.center - self.rv2*self.r
+        self.rh = self.rect_1.center - self.rv3*self.r
+        
+        self.lv0 = pygame.math.Vector2(-1,0).rotate(120)
+        self.lv1 = self.lv0.rotate(90)
+        self.lv2 = self.lv0.rotate(45)
+        self.lv3 = self.lv1.rotate(45)
+        
+        self.la = self.rect_1.center + self.lv0*self.r
+        self.lb = self.rect_1.center + self.lv1*self.r
+        self.lc = self.rect_1.center - self.lv0*self.r
+        self.ld = self.rect_1.center - self.lv1*self.r
+        
+        self.le = self.rect_1.center + self.lv2*self.r
+        self.lf = self.rect_1.center + self.lv3*self.r
+        self.lg = self.rect_1.center - self.lv2*self.r
+        self.lh = self.rect_1.center - self.lv3*self.r
+        
     def move(self):
         self.rect_1.center += self.dir*ball_speed
         self.rect_2.center += self.dir*ball_speed
+        
+        self.ra = self.rect_1.center + self.rv0*self.r
+        self.rb = self.rect_1.center + self.rv1*self.r
+        self.rc = self.rect_1.center - self.rv0*self.r
+        self.rd = self.rect_1.center - self.rv1*self.r
+        
+        self.re = self.rect_1.center + self.rv2*self.r
+        self.rf = self.rect_1.center + self.rv3*self.r
+        self.rg = self.rect_1.center - self.rv2*self.r
+        self.rh = self.rect_1.center - self.rv3*self.r
+        
+        self.la = self.rect_1.center + self.lv0*self.r
+        self.lb = self.rect_1.center + self.lv1*self.r
+        self.lc = self.rect_1.center - self.lv0*self.r
+        self.ld = self.rect_1.center - self.lv1*self.r
+        
+        self.le = self.rect_1.center + self.lv2*self.r
+        self.lf = self.rect_1.center + self.lv3*self.r
+        self.lg = self.rect_1.center - self.lv2*self.r
+        self.lh = self.rect_1.center - self.lv3*self.r
+        
     def draw(self):
         pygame.draw.circle(screen,light,self.rect_1.center,self.r)
+        #pygame.draw.polygon(screen,"cyan",(self.ra,self.rb,self.rc,self.rd),width = 2)
+        #pygame.draw.polygon(screen,"red",(self.re,self.rf,self.rg,self.rh),width = 2)
+        pygame.draw.polygon(screen,"white",(self.la,self.lb,self.lc,self.ld),width = 2)
+        pygame.draw.polygon(screen,"silver",(self.le,self.lf,self.lg,self.lh),width = 2)
         
+        pygame.draw.circle(screen,"red",self.ld,2)
 
 #vertikální hráč
 class ver_player(pygame.sprite.Sprite):
@@ -242,7 +299,7 @@ class right_triangel_player():
         #print(x0,x1,"--",test_point[0],"\n",y0,y1,"--",test_point[1])
         
         #pygame.draw.polygon(screen,"green",((x0,test_point[1]),(x1,test_point[1]),(test_point[0],y0),(test_point[0],y1)),width=3)
-        
+        #pygame.draw.circle(screen,"red",(test_point[0],y0),2)
         if x0 <= test_point[0] <= x1 and y0 <= test_point[1] <= y1:
             return True,x0,x1,y0,y1
         else:
