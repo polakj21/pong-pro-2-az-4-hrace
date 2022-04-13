@@ -230,10 +230,10 @@ class ball():
         pygame.draw.circle(screen,light,self.rect_1.center,self.r)
         #pygame.draw.polygon(screen,"cyan",(self.ra,self.rb,self.rc,self.rd),width = 2)
         #pygame.draw.polygon(screen,"red",(self.re,self.rf,self.rg,self.rh),width = 2)
-        pygame.draw.polygon(screen,"white",(self.la,self.lb,self.lc,self.ld),width = 2)
-        pygame.draw.polygon(screen,"silver",(self.le,self.lf,self.lg,self.lh),width = 2)
+        #pygame.draw.polygon(screen,"white",(self.la,self.lb,self.lc,self.ld),width = 2)
+        #pygame.draw.polygon(screen,"silver",(self.le,self.lf,self.lg,self.lh),width = 2)
         
-        pygame.draw.circle(screen,"red",self.ld,2)
+        #pygame.draw.circle(screen,"red",self.ld,2)
 
 #vertikální hráč
 class ver_player(pygame.sprite.Sprite):
@@ -285,6 +285,7 @@ class right_triangel_player():
         self.up = up
         self.v = pygame.math.Vector2(-1,0).rotate(60)
         self.center = self.v*246.5+center
+        self.restarting = self.center
         
         self.v1 = pygame.math.Vector2(-1,0).rotate(150)
         self.q01 = -tg60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
@@ -326,7 +327,7 @@ class right_triangel_player():
         if keys[self.down]:
             self.center -= self.v*player_speed
     def restart(self):
-        pass
+        self.center = self.restarting
     
 #pravá část trojuhelníku
 class left_triangel_player():
@@ -337,6 +338,7 @@ class left_triangel_player():
         self.v = pygame.math.Vector2(-1,0).rotate(120)
         #print(self.v)
         self.center = self.v*246.5+center
+        self.restarting = self.center
         
         self.v1 = pygame.math.Vector2(-1,0).rotate(30)
         self.q01 = -tg_60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
@@ -378,4 +380,4 @@ class left_triangel_player():
         if keys[self.down]:
             self.center -= self.v*player_speed
     def restart(self):
-        pass     
+        self.center = self.restarting   

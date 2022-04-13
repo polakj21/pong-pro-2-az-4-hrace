@@ -15,9 +15,9 @@ timeout = 13
 change_vector = pygame.math.Vector2(0.15,-0.15)
 
 sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
-        [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(82*2),83),True],
-        [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
-        [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
+          [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(82*2),83),True],
+          [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
+          [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
 sets_3 = [[hor_player(HEIGHT_3-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT_3-40),WIDTH-(82*2),20,1),wall((83,HEIGHT_3-82),WIDTH-(82*2),83),True],
           [right_triangel_player(pygame.math.Vector2(WIDTH-68,HEIGHT_3-82),pygame.K_KP8,pygame.K_KP2,2),right_triangel_branka(),right_triangel_wall(pygame.math.Vector2(80,60),82,60),True],
@@ -245,8 +245,6 @@ def ball_x_player_s():
                 ball.dir.y = -ball.dir.y
                 ball.dir.rotate_ip(120)
                 ball_timeout = timeout
-                print("¤")
-                break
                 if player.collide(ball.lb)[0]:
                     ball.rect_1.center = pygame.math.Vector2(int(player.collide(ball.lb)[1]),ball.rect_1.center[1]) - ball.lv1*ball.r
                     
@@ -288,28 +286,38 @@ def ball_x_player_s():
 def ball_x_walls_s():
     global ball_timeout
     for wall in walls_s:
-        if wall.collide(ball.rect_1.midleft)[0] or wall.collide(ball.rect_1.midright)[0]:
-            ball.dir.x = -ball.dir.x
-            ball_timeout = timeout
-            if wall.collide(ball.rect_1.midleft)[0]:
-                ball.rect_1.left = int(wall.collide(ball.rect_1.midleft)[2])
-            else:
-                ball.rect_1.right = int(wall.collide(ball.rect_1.midright)[1])
-            ball.rect_2.center = ball.rect_1.center
+        if "right" in str(wall.__class__):
+            if wall.collide(ball.ra)[0] or wall.collide(ball.rc)[0]:
+                ball.dir.rotate_ip(-60)
+                ball.dir.x = -ball.dir.x
+                ball.dir.rotate_ip(60)
+                ball_timeout = timeout
                 
-        elif wall.collide(ball.rect_1.midtop)[0] or wall.collide(ball.rect_1.midbottom)[0]:
-            ball.dir.y = -ball.dir.y
-            ball_timeout = timeout
-            if wall.collide(ball.rect_1.midtop)[0]:
-                ball.rect_1.top = int(wall.collide(ball.rect_1.midtop)[4])
-            else:
-                ball.rect_1.bottom = int(wall.collide(ball.rect_1.midbottom)[3])
-            ball.rect_2.center = ball.rect_1.center
-            
-        elif wall.collide(ball.rect_2.topleft)[0] or wall.collide(ball.rect_2.topright)[0] or wall.collide(ball.rect_2.bottomleft)[0] or wall.collide(ball.rect_2.bottomright)[0]:
-            ball.dir = -ball.dir
-            ball_timeout = timeout
-
+            elif wall.collide(ball.rb)[0] or wall.collide(ball.rd)[0]:
+                ball.dir.rotate_ip(-60)
+                ball.dir.y = -ball.dir.y
+                ball.dir.rotate_ip(60)
+                ball_timeout = timeout
+            elif wall.collide(ball.re)[0] or wall.collide(ball.rf)[0] or wall.collide(ball.rg)[0] or wall.collide(ball.rh)[0]:
+                ball.dir = -ball.dir
+                ball_timeout = timeout
+                
+        else:
+            if wall.collide(ball.la)[0] or wall.collide(ball.lc)[0]:
+                ball.dir.rotate_ip(-120)
+                ball.dir.x = -ball.dir.x
+                ball.dir.rotate_ip(120)
+                ball_timeout = timeout
+                
+            elif wall.collide(ball.lb)[0] or wall.collide(ball.ld)[0]:
+                ball.dir.rotate_ip(-120)
+                ball.dir.y = -ball.dir.y
+                ball.dir.rotate_ip(120)
+                ball_timeout = timeout
+            elif wall.collide(ball.le)[0] or wall.collide(ball.lf)[0] or wall.collide(ball.lg)[0] or wall.collide(ball.lh)[0]:
+                ball.dir = -ball.dir
+                ball_timeout = timeout
+                
 def ball_x_branky():
     global sets_4,state,new_dir
     for branka in branky:
