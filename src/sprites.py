@@ -287,6 +287,9 @@ class right_triangel_player():
         self.center = self.v*246.5+center
         self.restarting = self.center
         
+        self.do_up = True
+        self.do_down = True
+        
         self.v1 = pygame.math.Vector2(-1,0).rotate(150)
         self.q01 = -tg60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
         self.q02 = -tg60 * (self.v1*(-12.5) + self.v*50+self.center).x + (self.v1*(-12.5) + self.v*50+self.center).y
@@ -322,10 +325,12 @@ class right_triangel_player():
         pygame.draw.polygon(screen,light,(a,b,c,d))
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[self.up]:
-            self.center += self.v*player_speed
-        if keys[self.down]:
-            self.center -= self.v*player_speed
+        if self.do_up:
+            if keys[self.up]:
+                self.center += self.v*player_speed
+        if self.do_down:
+            if keys[self.down]:
+                self.center -= self.v*player_speed
     def restart(self):
         self.center = self.restarting
     
@@ -339,6 +344,9 @@ class left_triangel_player():
         #print(self.v)
         self.center = self.v*246.5+center
         self.restarting = self.center
+        
+        self.do_up = True
+        self.do_down = True
         
         self.v1 = pygame.math.Vector2(-1,0).rotate(30)
         self.q01 = -tg_60 * (self.v1*12.5 + self.v*50+self.center).x + (self.v1*12.5 + self.v*50+self.center).y
@@ -375,9 +383,11 @@ class left_triangel_player():
         self.q12 = -tg30 * d.x + d.y
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[self.up]:
-            self.center += self.v*player_speed
-        if keys[self.down]:
-            self.center -= self.v*player_speed
+        if self.do_up:
+            if keys[self.up]:
+                self.center += self.v*player_speed
+        if self.do_down:
+            if keys[self.down]:
+                self.center -= self.v*player_speed
     def restart(self):
         self.center = self.restarting   

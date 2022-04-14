@@ -48,7 +48,7 @@ def vyvolání_3():
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
     players_s = []
-    walls_s = [right_triangel_wall((WIDTH-82,HEIGHT_3-82),100,50),left_triangel_wall((82,HEIGHT_3-82),100,50),
+    walls_s = [right_triangel_wall((643, 551.301),100,-50),left_triangel_wall((57, 551.301),100,-50),
                right_triangel_wall((WIDTH//2+20,81),200,-100),left_triangel_wall((WIDTH//2-20,81),200,-100)]
     branky_s = []
     for option_ind,option in enumerate(sets_3):
@@ -81,6 +81,27 @@ def player_x_walls():
                 player.rect.left = wall.rect.right
             elif wall.rect.collidepoint(player.rect.midright):
                 player.rect.right = wall.rect.left
+                
+def player_s_x_walls_s():
+    for player in players_s:
+        do_collide_up = False
+        do_collide_down = False
+        for wall in walls_s:
+            if wall.collide(player.center - player.v*50)[0]:
+                player.do_down = False
+                do_collide_down = True
+                
+            if wall.collide(player.center + player.v*50)[0]:
+                player.do_up = False
+                do_collide_up = True
+            
+            pygame.draw.circle(screen,"red",player.center - player.v*50,2)
+            pygame.draw.circle(screen,"green",player.center + player.v*50,2)
+            
+        if not do_collide_up:
+            player.do_up = True
+        if not do_collide_down:
+            player.do_down = True
                 
 def ball_x_walls():
     global ball_timeout
@@ -471,6 +492,7 @@ while True:
         for player in players_s:
             player.update()
         player_x_walls()
+        #player_s_x_walls_s()
         ball.move()
         ball_x_branky()
         ball_timeout -=1
@@ -494,6 +516,8 @@ while True:
             ball_x_player_s()
             ball_x_walls_s()
             
+        player_s_x_walls_s()
+        
     #mezera mezi koli
     elif state == "countdown_4":
         countdown_time = countdown(countdown_time)
