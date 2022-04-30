@@ -11,62 +11,34 @@ new_dir = None
 countdown_time = 180
 
 ball_timeout = 0
-timeout = 13
+timeout = 9
 change_vector = pygame.math.Vector2(0.15,-0.15)
 
-sets_4 = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
-          [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(82*2),83),True],
-          [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
-          [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
-
-sets_3 = [[hor_player(HEIGHT_3-player_distance,100,25,pygame.K_LEFT,pygame.K_RIGHT,1),branka((83,HEIGHT_3-40),WIDTH-(82*2),20,1),wall((83,HEIGHT_3-82),WIDTH-(82*2),83),True],
-          [right_triangel_player(pygame.math.Vector2(WIDTH-68,HEIGHT_3-82),pygame.K_KP8,pygame.K_KP2,2),right_triangel_branka(),right_triangel_wall(pygame.math.Vector2(80,60),82,60),True],
-          [left_triangel_player(pygame.math.Vector2(68,HEIGHT_3-82),pygame.K_w,pygame.K_s,0),right_triangel_branka(),right_triangel_wall(pygame.math.Vector2(80,60),82,60),True]]
+sets = [[ver_player(player_distance,25,100,pygame.K_w,pygame.K_s,0),branka((20,83),20,HEIGHT-(82*2),0),wall((0,83),83,HEIGHT-(82*2)),True],
+        [hor_player(player_distance,100,25,pygame.K_KP4,pygame.K_KP6,1),branka((83,20),WIDTH-(82*2),20,1),wall((83,0),WIDTH-(82*2),83),True],
+        [ver_player(WIDTH-player_distance,25,100,pygame.K_UP,pygame.K_DOWN,2),branka((WIDTH-40,83),20,HEIGHT-(82*2),2),wall((WIDTH-82,83),83,HEIGHT-(82*2)),True],
+        [hor_player(HEIGHT-player_distance,100,25,pygame.K_g,pygame.K_j,3),branka((83,HEIGHT-40),WIDTH-(82*2),20,3),wall((83,HEIGHT-82),WIDTH-(82*2),83),True]]
 
 #vyvolání spriteů
-walls = pygame.sprite.Group()
+walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
 players = pygame.sprite.Group()
 branky = pygame.sprite.Group()
 
-players_s,walls_s,branky_s = [],[],[]
-
-def vyvolání_4():
+def vyvolání():
     global walls,players,branky
     walls = pygame.sprite.Group(wall((0,0),83,83),wall((0,HEIGHT-82),83,83),wall((WIDTH-82,0),83,83),wall((WIDTH-82,HEIGHT-82),83,83))
     players = pygame.sprite.Group()
     branky = pygame.sprite.Group()
-    for option in sets_4:
+    for option in sets:
         if option[3]:
             players.add(option[0])
             branky.add(option[1])
         else:
             walls.add(option[2])
-            
-def vyvolání_3():
-    global walls,players,branky,players_s,walls_s
-    walls = pygame.sprite.Group(wall((WIDTH-82,HEIGHT_3-82),83,83),wall((0,HEIGHT_3-82),83,83),wall((WIDTH//2-21,42),41,40))
-    players = pygame.sprite.Group()
-    branky = pygame.sprite.Group()
-    players_s = []
-    walls_s = [right_triangel_wall((643, 551.301),100,-50),left_triangel_wall((57, 551.301),100,-50),
-               right_triangel_wall((WIDTH//2+20,81),200,-100),left_triangel_wall((WIDTH//2-20,81),200,-100)]
-    branky_s = []
-    for option_ind,option in enumerate(sets_3):
-        if option_ind == 0:
-            if option[3]:
-                players.add(option[0])
-                branky.add(option[1])
-            else:
-                walls.add(option[2])
-        else:
-            if option[3]:
-                players_s.append(option[0])
-                branky_s.append(option[1])
-            else:
-                walls_s.append(option[2])
 
 ball_dir = pygame.math.Vector2(1,0)
 ball = ball((CENTER),20,ball_dir.normalize())
+vyvolání()
 
 #koize
 def player_x_walls():
@@ -82,48 +54,15 @@ def player_x_walls():
             elif wall.rect.collidepoint(player.rect.midright):
                 player.rect.right = wall.rect.left
                 
-def player_s_x_walls_s():
-    for player in players_s:
-        do_collide_up = False
-        do_collide_down = False
-        for wall in walls_s:
-            if wall.collide(player.center - player.v*50)[0]:
-                player.do_down = False
-                do_collide_down = True
-                
-            if wall.collide(player.center + player.v*50)[0]:
-                player.do_up = False
-                do_collide_up = True
-            
-            pygame.draw.circle(screen,"red",player.center - player.v*50,2)
-            pygame.draw.circle(screen,"green",player.center + player.v*50,2)
-            
-        if not do_collide_up:
-            player.do_up = True
-        if not do_collide_down:
-            player.do_down = True
-                
 def ball_x_walls():
     global ball_timeout
     for wall in walls:
         if wall.rect.collidepoint(ball.rect_1.midtop) or wall.rect.collidepoint(ball.rect_1.midbottom):
             ball.dir.y = -ball.dir.y
             ball_timeout = timeout
-            if wall.rect.collidepoint(ball.rect_1.midtop):
-                ball.rect_1.top = wall.rect.bottom
-                ball.rect_2.center = ball.rect_1.center
-            else:
-                ball.rect_1.bottom = wall.rect.top
-                ball.rect_2.center = ball.rect_1.center
         elif wall.rect.collidepoint(ball.rect_1.midright) or wall.rect.collidepoint(ball.rect_1.midleft):
             ball.dir.x = -ball.dir.x
             ball_timeout = timeout
-            if wall.rect.collidepoint(ball.rect_1.midright):
-                ball.rect_1.right = wall.rect.left
-                ball.rect_2.center = ball.rect_1.center
-            else:
-                ball.rect_1.left = wall.rect.right
-                ball.rect_2.center = ball.rect_1.center
         
         elif wall.rect.collidepoint(ball.rect_2.topleft) or wall.rect.collidepoint(ball.rect_2.topright) or wall.rect.collidepoint(ball.rect_2.bottomleft) or wall.rect.collidepoint(ball.rect_2.bottomright):
             ball.dir = -ball.dir
@@ -145,18 +84,18 @@ def ball_x_player():
             #odchilka
             if player.rect.center[0] > ball.rect_1.center[0]:
                 if player.rect.center[0] - ball.rect_1.center[0] > 10:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
                 if player.rect.center[0] - ball.rect_1.center[0] > 20:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
                 if player.rect.center[0] - ball.rect_1.center[0] > 30:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
             else:
                 if ball.rect_1.center[0] - player.rect.center[0] > 10:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
                 if ball.rect_1.center[0] - player.rect.center[0] > 20:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
                 if ball.rect_1.center[0] - player.rect.center[0] > 30:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
             ball.dir.normalize_ip()
             
         elif player.rect.collidepoint(ball.rect_1.midright) or player.rect.collidepoint(ball.rect_1.midleft):
@@ -172,18 +111,18 @@ def ball_x_player():
             #odchilka
             if player.rect.center[1] > ball.rect_1.center[1]:
                 if player.rect.center[1] - ball.rect_1.center[1] > 10:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
                 if player.rect.center[1] - ball.rect_1.center[1] > 20:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
                 if player.rect.center[1] - ball.rect_1.center[1] > 30:
-                    ball.dir.rotate_ip(6)
+                    ball.dir += change_vector
             else:
                 if ball.rect_1.center[1] - player.rect.center[1] > 10:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
                 if ball.rect_1.center[1] - player.rect.center[1] > 20:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
                 if ball.rect_1.center[0] - player.rect.center[1] > 30:
-                    ball.dir.rotate_ip(-6)
+                    ball.dir -= change_vector
             ball.dir.normalize_ip()
         
         elif player.rect.collidepoint(ball.rect_2.topleft) or player.rect.collidepoint(ball.rect_2.topright) or player.rect.collidepoint(ball.rect_2.bottomleft) or player.rect.collidepoint(ball.rect_2.bottomright):
@@ -191,156 +130,8 @@ def ball_x_player():
             ball_timeout = timeout
             ball.id = player.id
 
-def ball_x_player_s():
-    global ball_timeout
-    for player in players_s:
-        if "right" in str(player.__class__):
-            if player.collide(ball.ra)[0] or player.collide(ball.rc)[0]:
-                ball.dir.rotate_ip(-60)
-                ball.dir.x = -ball.dir.x
-                ball.dir.rotate_ip(60)
-                ball_timeout = timeout
-                if player.collide(ball.ra)[0]:
-                    ball.rect_1.center = pygame.math.Vector2(ball.rect_1.center[0],int(player.collide(ball.ra)[4])) - ball.rv0*ball.r
-                else:
-                    ball.rect_1.center = pygame.math.Vector2(ball.rect_1.center[0],int(player.collide(ball.rc)[3])) + ball.rv0*ball.r
-                ball.rect_2.center = ball.rect_1.center
-                
-            elif player.collide(ball.rb)[0] or player.collide(ball.rd)[0]:
-                ball.dir.rotate_ip(-60)
-                ball.dir.y = -ball.dir.y
-                ball.dir.rotate_ip(60)
-                ball_timeout = timeout
-                if player.collide(ball.rb)[0]:
-                    ball.rect_1.center = pygame.math.Vector2(int(player.collide(ball.rb)[1]),ball.rect_1.center[1]) - ball.rv1*ball.r
-                    
-                    if 20 >= player.collide(ball.rb)[3] - ball.rect_1.center[1]:
-                        ball.dir.rotate_ip(15)
-                    elif 30 >= player.collide(ball.rb)[3] - ball.rect_1.center[1] > 20:
-                        ball.dir.rotate_ip(10)
-                    elif 40 >= player.collide(ball.rb)[3] - ball.rect_1.center[1] > 30:
-                        ball.dir.rotate_ip(5)
-                        
-                    if 20 >= ball.rect_1.center[1] - player.collide(ball.rb)[4]:
-                        ball.dir.rotate_ip(-15)
-                    elif 30 >= ball.rect_1.center[1] - player.collide(ball.rb)[4] > 20:
-                        ball.dir.rotate_ip(-10)
-                    elif 40 >= ball.rect_1.center[1] - player.collide(ball.rb)[4] > 30:
-                        ball.dir.rotate_ip(-5) 
-                else:
-                    ball.rect_1.center = pygame.math.Vector2(int(player.collide(ball.rd)[2]),ball.rect_1.center[1]) + ball.rv1*ball.r
-                
-                    if 20 >= player.collide(ball.rd)[3] - ball.rect_1.center[1] > 10:
-                        ball.dir.rotate_ip(15)
-                    elif 30 >= player.collide(ball.rd)[3] - ball.rect_1.center[1] > 20:
-                        ball.dir.rotate_ip(10)
-                    elif 40 >= player.collide(ball.rd)[3] - ball.rect_1.center[1] > 30:
-                        ball.dir.rotate_ip(5)
-                        
-                    if 20 >= ball.rect_1.center[1] - player.collide(ball.rd)[4] > 10:
-                        ball.dir.rotate_ip(-15)
-                    elif 30 >= ball.rect_1.center[1] - player.collide(ball.rd)[4] > 20:
-                        ball.dir.rotate_ip(-10)
-                    elif 40 >= ball.rect_1.center[1] - player.collide(ball.rd)[4] > 30:
-                        ball.dir.rotate_ip(-5)
-                
-                ball.rect_2.center = ball.rect_1.center
-            elif player.collide(ball.re)[0] or player.collide(ball.rf)[0] or player.collide(ball.rg)[0] or player.collide(ball.rh)[0]:
-                ball.dir = -ball.dir
-                ball_timeout = timeout
-                
-        else:
-            if player.collide(ball.la)[0] or player.collide(ball.lc)[0]:
-                ball.dir.rotate_ip(-120)
-                ball.dir.x = -ball.dir.x
-                ball.dir.rotate_ip(120)
-                ball_timeout = timeout
-                if player.collide(ball.la)[0]:
-                    ball.rect_1.center = pygame.math.Vector2(ball.rect_1.center[0],int(player.collide(ball.la)[4])) - ball.lv0*ball.r
-                else:
-                    ball.rect_1.center = pygame.math.Vector2(ball.rect_1.center[0],int(player.collide(ball.lc)[3])) + ball.lv0*ball.r
-                ball.rect_2.center = ball.rect_1.center
-                
-            elif player.collide(ball.lb)[0] or player.collide(ball.ld)[0]:
-                ball.dir.rotate_ip(-120)
-                ball.dir.y = -ball.dir.y
-                ball.dir.rotate_ip(120)
-                ball_timeout = timeout
-                if player.collide(ball.lb)[0]:
-                    ball.rect_1.center = pygame.math.Vector2(int(player.collide(ball.lb)[1]),ball.rect_1.center[1]) - ball.lv1*ball.r
-                    
-                    if 20 >= player.collide(ball.lb)[3] - ball.rect_1.center[1]:
-                        ball.dir.rotate_ip(15)
-                    elif 30 >= player.collide(ball.lb)[3] - ball.rect_1.center[1] > 20:
-                        ball.dir.rotate_ip(10)
-                    elif 40 >= player.collide(ball.lb)[3] - ball.rect_1.center[1] > 30:
-                        ball.dir.rotate_ip(5)
-                        
-                    if 20 >= ball.rect_1.center[1] - player.collide(ball.lb)[4]:
-                        ball.dir.rotate_ip(-15)
-                    elif 30 >= ball.rect_1.center[1] - player.collide(ball.lb)[4] > 20:
-                        ball.dir.rotate_ip(-10)
-                    elif 40 >= ball.rect_1.center[1] - player.collide(ball.lb)[4] > 30:
-                        ball.dir.rotate_ip(-5) 
-                else:
-                    ball.rect_1.center = pygame.math.Vector2(int(player.collide(ball.ld)[2]),ball.rect_1.center[1]) + ball.rv1*ball.r
-                
-                    if 20 >= player.collide(ball.ld)[3] - ball.rect_1.center[1]:
-                        ball.dir.rotate_ip(15)
-                    elif 30 >= player.collide(ball.ld)[3] - ball.rect_1.center[1] > 20:
-                        ball.dir.rotate_ip(10)
-                    elif 40 >= player.collide(ball.ld)[3] - ball.rect_1.center[1] > 30:
-                        ball.dir.rotate_ip(5)
-                        
-                    if 20 >= ball.rect_1.center[1] - player.collide(ball.ld)[4]:
-                        ball.dir.rotate_ip(-15)
-                    elif 30 >= ball.rect_1.center[1] - player.collide(ball.ld)[4] > 20:
-                        ball.dir.rotate_ip(-10)
-                    elif 40 >= ball.rect_1.center[1] - player.collide(ball.ld)[4] > 30:
-                        ball.dir.rotate_ip(-5)
-                
-                ball.rect_2.center = ball.rect_1.center
-            elif player.collide(ball.le)[0] or player.collide(ball.lf)[0] or player.collide(ball.lg)[0] or player.collide(ball.lh)[0]:
-                ball.dir = -ball.dir
-                ball_timeout = timeout
-        
-def ball_x_walls_s():
-    global ball_timeout
-    for wall in walls_s:
-        if "right" in str(wall.__class__):
-            if wall.collide(ball.ra)[0] or wall.collide(ball.rc)[0]:
-                ball.dir.rotate_ip(-60)
-                ball.dir.x = -ball.dir.x
-                ball.dir.rotate_ip(60)
-                ball_timeout = timeout
-                
-            elif wall.collide(ball.rb)[0] or wall.collide(ball.rd)[0]:
-                ball.dir.rotate_ip(-60)
-                ball.dir.y = -ball.dir.y
-                ball.dir.rotate_ip(60)
-                ball_timeout = timeout
-            elif wall.collide(ball.re)[0] or wall.collide(ball.rf)[0] or wall.collide(ball.rg)[0] or wall.collide(ball.rh)[0]:
-                ball.dir = -ball.dir
-                ball_timeout = timeout
-                
-        else:
-            if wall.collide(ball.la)[0] or wall.collide(ball.lc)[0]:
-                ball.dir.rotate_ip(-120)
-                ball.dir.x = -ball.dir.x
-                ball.dir.rotate_ip(120)
-                ball_timeout = timeout
-                
-            elif wall.collide(ball.lb)[0] or wall.collide(ball.ld)[0]:
-                ball.dir.rotate_ip(-120)
-                ball.dir.y = -ball.dir.y
-                ball.dir.rotate_ip(120)
-                ball_timeout = timeout
-            elif wall.collide(ball.le)[0] or wall.collide(ball.lf)[0] or wall.collide(ball.lg)[0] or wall.collide(ball.lh)[0]:
-                ball.dir = -ball.dir
-                ball_timeout = timeout
-                
 def ball_x_branky():
-    global sets_4,state,new_dir
+    global sets,state,new_dir
     for branka in branky:
         if branka.rect.colliderect(ball.rect_2):
             if branka.id == 0:
@@ -362,13 +153,13 @@ def ball_x_branky():
             branka.lives -= 1
             
             if branka.lives == 0:
-                sets_4[branka.id][3] = False
-                vyvolání_4()
-                if ball.id == 0 and sets_4[0][3]:
+                sets[branka.id][3] = False
+                vyvolání()
+                if ball.id == 0 and sets[0][3]:
                     new_dir = pygame.math.Vector2(-1,0)
-                elif ball.id == 1 and sets_4[1][3]:
+                elif ball.id == 1 and sets[1][3]:
                     new_dir = pygame.math.Vector2(0,-1)
-                elif ball.id == 2 and sets_4[2][3]:
+                elif ball.id == 2 and sets[2][3]:
                     new_dir = pygame.math.Vector2(1,0)
                 else:
                     new_dir = pygame.math.Vector2(0,1)
@@ -383,10 +174,6 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
-        for player in players_s:
-            player.draw()
-        for wall in walls_s:
-            wall.draw()
         ball.draw()
         screen.blit(number_3,number_rect)
     if time == 120:
@@ -394,10 +181,6 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
-        for player in players_s:
-            player.draw()
-        for wall in walls_s:
-            wall.draw()
         ball.draw()
         screen.blit(number_2,number_rect)
     if time == 60:
@@ -405,10 +188,6 @@ def countdown(time):
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
-        for player in players_s:
-            player.draw()
-        for wall in walls_s:
-            wall.draw()
         ball.draw()
         screen.blit(number_1,number_rect)
     if time == 0:
@@ -437,12 +216,12 @@ while True:
         if four_players_0_rect.collidepoint(mouse_pos):
             screen.blit(four_players_1,four_players_1_rect)
             if mouse_pressed[0]:
-                for part in sets_4:
+                for part in sets:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
                 state = "countdown_4"
-                vyvolání_4()
+                vyvolání()
                 screen = pygame.display.set_mode((WIDTH,HEIGHT))
                 ball.dir = pygame.math.Vector2(1,0)
                 ball.rect_1.center = ball.rect_2.center = CENTER
@@ -451,14 +230,15 @@ while True:
         if three_players_0_rect.collidepoint(mouse_pos):
             screen.blit(three_players_1,three_players_1_rect)
             if mouse_pressed[0]:
-                for part in sets_3:
+                for part in sets:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
                 state = "countdown_3"
-                vyvolání_3()
-                screen = pygame.display.set_mode((WIDTH,HEIGHT_3))
-                ball.dir = pygame.math.Vector2(0,1)
+                sets[-1][-1] = False
+                vyvolání()
+                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                ball.dir = pygame.math.Vector2(1,0)
                 ball.rect_1.center = ball.rect_2.center = CENTER
         else:
             screen.blit(three_players_0,three_players_0_rect)
@@ -484,51 +264,41 @@ while True:
         walls.draw(screen)
         players.draw(screen)
         ball.draw()
-            
+        
     #hra pro tři hráče
     elif state == "game_3":
         #update
         players.update()
-        for player in players_s:
-            player.update()
         player_x_walls()
-        #player_s_x_walls_s()
+        if ball_timeout <= 0:
+            ball_x_walls()
+            ball_x_player()
         ball.move()
         ball_x_branky()
         ball_timeout -=1
+        if len(players) == 1:
+            state = "win_3"
         
         #vykreslení
         screen.fill(darker)
         branky.draw(screen)
         walls.draw(screen)
         players.draw(screen)
-        for player in players_s:
-            player.draw()
-        for wall in walls_s:
-            wall.draw()
-        
         ball.draw()
-        
-        
-        if ball_timeout <= 0:
-            ball_x_walls()
-            ball_x_player()
-            ball_x_player_s()
-            ball_x_walls_s()
-            
-        player_s_x_walls_s()
         
     #mezera mezi koli
     elif state == "countdown_4":
         countdown_time = countdown(countdown_time)
         if countdown_time == 180:
             state = "game_4"
-    
+            vyvolání()
+            
     elif state == "countdown_3":
+        sets[-1][-1] = False
         countdown_time = countdown(countdown_time)
-        countdown_time = 180
         if countdown_time == 180:
             state = "game_3"
+            vyvolání()
         
     #vítězná obrazovka
     elif state == "win_4":
@@ -546,11 +316,44 @@ while True:
         if restart_0_rect.collidepoint(mouse_pos):
             screen.blit(restart_1,restart_1_rect)
             if mouse_pressed[0]:
-                for part in sets_4:
+                for part in sets:
                     part[0].restart()
                     part[1].restart()
                     part[3] = True
                 state = "countdown_4"
+                screen = pygame.display.set_mode((WIDTH,HEIGHT))
+                ball.dir = pygame.math.Vector2(1,0)
+                ball.rect_1.center = ball.rect_2.center = CENTER
+                
+        else:
+            screen.blit(restart_0,restart_0_rect)
+        if menu_0_rect.collidepoint(mouse_pos):
+            screen.blit(menu_1,menu_1_rect)
+            if mouse_pressed[0]:
+                state = "menu"
+        else:
+            screen.blit(menu_0,menu_0_rect)
+            
+    elif state == "win_3":
+        screen = pygame.display.set_mode((WIDTH,HEIGHT_2))
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        
+        for player in players:
+            win_text = chiller.render("Player "+str(player.id+1)+" has won!",False,light)
+        win_rect = win_text.get_rect()
+        win_rect.center = (WIDTH//2,HEIGHT_2//4)
+        
+        screen.fill(dark)
+        screen.blit(win_text,win_rect)
+        if restart_0_rect.collidepoint(mouse_pos):
+            screen.blit(restart_1,restart_1_rect)
+            if mouse_pressed[0]:
+                for part in sets:
+                    part[0].restart()
+                    part[1].restart()
+                    part[3] = True
+                state = "countdown_3"
                 screen = pygame.display.set_mode((WIDTH,HEIGHT))
                 ball.dir = pygame.math.Vector2(1,0)
                 ball.rect_1.center = ball.rect_2.center = CENTER
